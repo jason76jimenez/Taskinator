@@ -26,6 +26,7 @@ var createTaskEl = function(taskDataObj) {
     listItemEl.className = "task-item";
     
     listItemEl.setAttribute("data-task-id", taskIdCounter);
+    listItemEl.setAttribute("draggable", "true");
 
     var taskInfoEl = document.createElement("div");
     taskInfoEl.className= "task-info";
@@ -111,12 +112,42 @@ var editTask = function(taskId) {
     document.querySelector("#save-task").textContent = "Save Task";
     formEl.setAttribute("data-task-id", taskId);
 };
+var dragTaskHandler = function(event) {
+    var taskId = event.target.getAttribute("data-task-id");
+    event.dataTransfer.setData("text/plain", taskId);
+    var getId = event.dataTransfer.getData("text/plain");
+    console.log("getId:", getId, typeof getId);
+}
+var dropZoneDragHandler = function(event) {
+    //console.log("Dragover Event Target:", event.target);
+    var taskListEl = event.target.closest(".task-list");
+    if (taskListEl) {
+        event.preventDefault();
+    }
+};
+var dropTaskHandler = function(event) {
+    var id = event.dataTransfer.getData("text/plain");
+    var draggableElement = document.querySelector("[data-task-id='" + id + "']");
+    console.log(draggableElement);
+    console.dir(draggableElement);
+    console.log("Drop Event Target:", event.target, event.dataTransfer, id);
+    var dropZoneEl = event.target.closest(".task-list");
+    var statusType = dropZoneEl.id;
+    var statusSelectEl = draggableElement.querySelector("select[name='status-change']");
+    if (statusType === "tasks-to-do") {
+        statusSelectEl.selectedIndex = 0;
+    }
+    else if (statusType === "tasks-in-progress") {
+        statusSelectEl.selectedIndex = 2;
+    }
+    dropZoneEl.appendChild(draggableElement);
+};
 
 
 
 
-
-
-
+pageContentEl.addEventListener("drop", dropTaskHandler);
+pageContentEl.addEventListener("dragover", dropZoneDragHandler);
+pageContentEl.addEventListener("dragstart", dragTaskHandler);
 pageContentEl.addEventListener("click", taskButtonHandler);
-formEl.addEventListener("submit", taskFormHandler); 
+formEl.addEventListener("submit", taskFormHandler);
