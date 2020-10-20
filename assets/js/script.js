@@ -40,6 +40,10 @@ var createTaskEl = function(taskDataObj) {
     taskDataObj.id = taskIdCounter;
     tasks.push(taskDataObj);
 
+    var saveTasks = function () {
+        localStorage.setItem("tasks", JSON.stringify(tasks));  
+      }
+
     var taskActionsEl = createTaskActions(taskIdCounter);
     listItemEl.appendChild(taskActionsEl);
 
@@ -112,6 +116,9 @@ var deleteTask = function(taskId) {
     }
     tasks = updatedTaskArr;
     console.log(taskSelected);
+    var saveTasks = function () {
+        localStorage.setItem("tasks", JSON.stringify(tasks)); 
+      }
 };
 // Complete Edit Task
 var editTask = function(taskId) {
@@ -128,6 +135,9 @@ var editTask = function(taskId) {
             tasks[i].type = taskType;
         }
     };
+    var saveTasks = function () {
+        localStorage.setItem("tasks", JSON.stringify(tasks));  
+      }
 
     document.querySelector("input[name='task-name']").value = taskName;
     document.querySelector("select[name='task-type']").value= taskType;
@@ -153,6 +163,9 @@ var taskStatusChangeHandler = function(event) {
             tasks[i].status = statusValue; 
         }
     }
+    var saveTasks = function () {
+        localStorage.setItem("tasks", JSON.stringify(tasks));  
+      }
 };
 
 
@@ -196,6 +209,9 @@ for (var i = 0; i < tasks.length; i++) {
         tasks[i].status = statusSelectEl.value.toLowerCase();
     }
 }
+var saveTasks = function () {
+    localStorage.setItem("tasks", JSON.stringify(tasks));  
+  }
 };
 
 var dragLeaveHandler = function(event) {
@@ -204,6 +220,23 @@ if (taskListEl) {
     taskListEl.removeAttribute("style");
 }
 }
+var saveTasks = function () {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+var loadTasks = function () {
+    var savedTasks = localStorage.getItem("tasks");
+    if (!savedTasks) {
+        return false;
+    }
+    savedTasks = JSON.parse(savedTasks);
+    for (var i = 0; i < savedTasks.length; i++) {
+        createTaskEl(savedTasks[i]);
+    }
+}
+
+
+
+
 pageContentEl.addEventListener("change", taskStatusChangeHandler);
 pageContentEl.addEventListener("dragleave", dragLeaveHandler);
 pageContentEl.addEventListener("drop", dropTaskHandler);
