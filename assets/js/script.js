@@ -2,6 +2,7 @@ var formEl = document.querySelector("#task-form");
 var tasksToDoEl = document.querySelector("#tasks-to-do");
 var taskIdCounter = 0;
 var pageContentEl = document.querySelector("#page-content");
+var tasks = [];
 
 var taskFormHandler = function(event) {
 
@@ -11,14 +12,17 @@ var taskFormHandler = function(event) {
     var taskTypeInput = document.querySelector("select[name='task-type']").value;
     var taskDataObj = {
         name: taskNameInput,
-        type: taskTypeInput
-    };
+        type: taskTypeInput,
+        status: "to do"
+    }
     if (!taskNameInput || !taskTypeInput) {
         alert("You need to fill out the task form!");
         return false;
     }
     formEl.reset();
     createTaskEl(taskDataObj);
+    console.log(taskDataObj);
+    console.log(taskDataObj.status);
 }   
     //listItemEl.textContent = taskNameInput,taskTypeInput
 var createTaskEl = function(taskDataObj) {
@@ -32,6 +36,9 @@ var createTaskEl = function(taskDataObj) {
     taskInfoEl.className= "task-info";
     taskInfoEl.innerHTML= "<h3 class='task-name'>" + taskDataObj.name + "</h3><span class= 'task-type'>" + taskDataObj.type + "</span>";
     listItemEl.appendChild(taskInfoEl);
+
+    taskDataObj.id = taskIdCounter;
+    tasks.push(taskDataObj);
 
     var taskActionsEl = createTaskActions(taskIdCounter);
     listItemEl.appendChild(taskActionsEl);
@@ -101,14 +108,24 @@ var editTask = function(taskId) {
 
     var taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']");
 
-    var taskName = taskSelected.querySelector("h3.task-name").textContent;
+    var taskName = taskSelected.querySelector("h3.task-name").textContent = taskName;
     console.log(taskName);
 
-    var taskType = taskSelected.querySelector("span.task-type").textContext;
+    var taskType = taskSelected.querySelector("span.task-type").textContext = taskType;
     console.log(taskType);
 
     document.querySelector("input[name='task-name']").value = taskName;
     document.querySelector("select[name='task-type']").value= taskType;
+
+    var updatedTaskArr = [];
+
+    for (var i= 0; i < tasks.length; i++) {
+        if (tasks[i].id !== parseInt(taskId)) {
+            updatedTaskArr.push(tasks[i]);
+        }
+    }
+    tasks = updatedTaskArr;
+    console.log(tasks);
     document.querySelector("#save-task").textContent = "Save Task";
     formEl.setAttribute("data-task-id", taskId);
 };
@@ -148,11 +165,6 @@ if (taskListEl) {
     taskListEl.removeAttribute("style");
 }
 };
-//var taskListEl = event.target.closest(".task-list");
-//if (taskListEl) {
-//    taskListEl.removeAttribute("style");
-//}
-
 
 var dragLeaveHandler = function(event) {
     var taskListEl = event.target.closest(".task-list");
@@ -160,6 +172,7 @@ if (taskListEl) {
     taskListEl.removeAttribute("style");
 }
 }
+
 pageContentEl.addEventListener("dragleave", dragLeaveHandler);
 pageContentEl.addEventListener("drop", dropTaskHandler);
 pageContentEl.addEventListener("dragover", dropZoneDragHandler);
